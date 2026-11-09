@@ -1,0 +1,5 @@
+# keep the private key out of the build context
+ssh/id_ed25519
+ssh/id_ed25519.pub
+**/__pycache__/
+**/node_modules/

@@ -1,0 +1,38 @@
+# Host networking: each box shares the host netns, so sshd uses a UNIQUE port
+# per container (frontend 2222, midware 2223, supabase 2224). Ports: mapping is
+# ignored under network_mode: host — the container binds directly.
+services:
+  frontend:
+    build: { context: ., dockerfile: frontend/Dockerfile }
+    image: tr-frontend
+    container_name: frontend
+    hostname: frontend
+    network_mode: host
+    restart: unless-stopped
+    volumes:
+      - ../frontend:/workspace
+
+  midware:
+    build: { context: ., dockerfile: midware/Dockerfile }
+    image: tr-midware
+    container_name: midware
+    hostname: midware
+    network_mode: host
+    restart: unless-stopped
+    volumes:
+      - ../midware:/workspace
+      - tr-pgdata-notes:/workspace/.data
+
+  supabase:
+    build: { context: ., dockerfile: supabase/Dockerfile }
+    image: tr-supabase
+    container_name: supabase
+    hostname: supabase
+    network_mode: host
+    restart: unless-stopped
+    volumes:
+      - tr-pgdata:/var/lib/postgresql
+
+volumes:
+  tr-pgdata:
+  tr-pgdata-notes:

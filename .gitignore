@@ -1,0 +1,16 @@
+# deps / build output
+node_modules/
+dist/
+.venv/
+__pycache__/
+*.pyc
+
+# secrets / local-only
+.env
+*.log
+*.pid
+
+# misc
+.DS_Store
+.idea/
+.vscode/
