@@ -39,6 +39,20 @@ class DB:
                 "VALUES(%s,%s,%s,%s,%s,%s)",
                 (self.instrument_id, ts, ev["combined"], ev["spread"], ev["pos"], ev["zone"]))
 
+    def recent_prices(self, instrument_id, limit):
+        """Last `limit` tick prices (oldest->newest) for seeding the live buffer."""
+        with self.conn.cursor() as cur:
+            cur.execute("SELECT price FROM ticks WHERE instrument_id=%s ORDER BY ts_us DESC LIMIT %s",
+                        (instrument_id, limit))
+            return [float(r[0]) for r in reversed(cur.fetchall())]
+
+    def copy_ticks(self, instrument_id, rows):
+        """rows: iterable of (ts_us, price, size, side) — bulk COPY into ticks."""
+        with self.conn.cursor() as cur:
+            with cur.copy("COPY ticks (instrument_id, ts_us, price, size, side) FROM STDIN") as cp:
+                for ts_us, price, size, side in rows:
+                    cp.write_row((instrument_id, ts_us, price, size, side))
+
     def ping(self):
         with self.conn.cursor() as cur:
             cur.execute("SELECT 1")

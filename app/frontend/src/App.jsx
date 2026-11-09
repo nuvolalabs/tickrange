@@ -21,8 +21,9 @@ export default function App() {
   const metaRef = useRef({ price: 100, count: 0, regime: 'range' })
 
   const [mode, setMode] = useState('sim')
+  const [symbol, setSymbol] = useState('NQ')
   const [wsState, setWsState] = useState('off')
-  const [price, setPrice] = useState(100)
+  const [price, setPrice] = useState(27850)
   const [regime, setRegime] = useState('range')
   const [tickCount, setTickCount] = useState(0)
   const [ev, setEv] = useState(null)
@@ -48,7 +49,7 @@ export default function App() {
       }
     }
     linesRef.current = lines
-    simRef.current = createSimulator({ start: 100 })
+    simRef.current = createSimulator({ start: 27850 })
 
     const timer = setInterval(() => {
       const sim = simRef.current
@@ -94,7 +95,7 @@ export default function App() {
       ws.onopen = () => setWsState('open')
       ws.onmessage = (e) => {
         const d = JSON.parse(e.data)
-        if (d.type === 'ticks') { const p = pendingRef.current; for (const x of d.p) p.push(x); if (d.meta) metaRef.current = d.meta }
+        if (d.type === 'ticks') { const p = pendingRef.current; for (const x of d.p) p.push(x); if (d.meta) { metaRef.current = d.meta; if (d.meta.symbol) setSymbol(d.meta.symbol) } }
       }
       ws.onclose = () => { setWsState('connecting'); if (!closed) setTimeout(connect, 1000) }
       ws.onerror = () => ws.close()
@@ -109,7 +110,7 @@ export default function App() {
       <header>
         <h1>tickrange</h1>
         <div className="hdr">
-          <span className="sym">ES</span>
+          <span className="sym">{symbol}</span>
           <span className="px">{price.toFixed(3)}</span>
           <span className={`regime ${regime}`}>{regime}</span>
           <span className="ticks">{tickCount.toLocaleString()} ticks</span>
