@@ -12,6 +12,9 @@ header h1 { margin: 0; font-size: 18px; letter-spacing: .5px; }
 .ticks { color: #9aa4b2; }
 .badge { margin-left: auto; font-size: 11px; color: #f59e0b; border: 1px solid #f59e0b55; padding: 2px 8px; border-radius: 10px; }
 .chart { border: 1px solid #1b2430; border-radius: 8px; overflow: hidden; }
+.chartbox { position: relative; display: grid; min-height: 0; }
+.chartbox .chart { height: 100%; }
+.replaybar { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); z-index: 5; max-width: 92%; background: rgba(120,53,15,.94); color: #fde68a; border: 1px solid #f59e0b99; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; text-align: center; pointer-events: none; box-shadow: 0 2px 10px #0006; }
 .panels { display: grid; grid-template-columns: 1fr 260px; gap: 10px; }
 .gauges { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .gauge { background: #111823; border: 1px solid #1b2430; border-radius: 8px; padding: 10px; }

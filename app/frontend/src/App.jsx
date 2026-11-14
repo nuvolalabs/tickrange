@@ -162,7 +162,14 @@ export default function App() {
         </div>
       </header>
 
-      <div className="chart" ref={chartEl} />
+      <div className="chartbox">
+        {live && source === 'replay' && (
+          <div className="replaybar" id="replay-bar">
+            ⏸ REPLAY — historical data, not live. The market feed is silent (closed), so real ticks from earlier sessions are being replayed.
+          </div>
+        )}
+        <div className="chart" ref={chartEl} />
+      </div>
 
       {ev && (
         <div className="panels">
