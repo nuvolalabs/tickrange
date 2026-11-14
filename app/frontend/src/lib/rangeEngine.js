@@ -62,12 +62,17 @@ export function rangeConfidence(bars) {
   }
 }
 
-export function evaluateAll(ticks, frames = FRAMES, barsPerFrame = BARS_PER_FRAME) {
+export function evaluateAll(ticks, frames = FRAMES, barsPerFrame = BARS_PER_FRAME, base = 0) {
   const out = {}
   for (const n of frames) {
-    const need = n * barsPerFrame
-    const start = Math.max(0, ticks.length - need)
-    const bars = buildBars(ticks.slice(start), n)
+    // Anchor the window to ABSOLUTE bar boundaries (base = absolute index of ticks[0])
+    // so the same bars are scored no matter how the sliding buffer lines up. Without
+    // this, dropping ticks off the front re-chunks every bar and the scores jitter.
+    const lastAbs = base + ticks.length - 1
+    const lastBar = Math.floor(lastAbs / n)
+    const startBar = Math.max(0, lastBar + 1 - barsPerFrame)
+    const startLocal = Math.max(0, startBar * n - base)
+    const bars = buildBars(ticks.slice(startLocal), n).slice(-barsPerFrame)
     out[n] = rangeConfidence(bars)
   }
   const confs = frames.map(n => out[n].conf)

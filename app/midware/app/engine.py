@@ -54,12 +54,16 @@ def range_confidence(bars):
             "er": er, "flat": flat_score, "touches": touches, "contain": contain_score}
 
 
-def evaluate_all(ticks, frames=FRAMES, bars_per_frame=BARS_PER_FRAME):
+def evaluate_all(ticks, frames=FRAMES, bars_per_frame=BARS_PER_FRAME, base=0):
     out = {}
     for n in frames:
-        need = n * bars_per_frame
-        start = max(0, len(ticks) - need)
-        out[n] = range_confidence(build_bars(ticks[start:], n))
+        # Anchor to ABSOLUTE bar boundaries (base = absolute index of ticks[0]);
+        # mirrors the JS engine so both score the same bars.
+        last_abs = base + len(ticks) - 1
+        last_bar = last_abs // n
+        start_bar = max(0, last_bar + 1 - bars_per_frame)
+        start_local = max(0, start_bar * n - base)
+        out[n] = range_confidence(build_bars(ticks[start_local:], n)[-bars_per_frame:])
     confs = [out[n]["conf"] for n in frames]
     mean = sum(confs) / len(confs)
     spread = max(confs) - min(confs)
